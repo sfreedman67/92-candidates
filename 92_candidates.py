@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
-from flatsurf import *
+# from flatsurf import *
 from sage.all_cmdline import *   # import sage library
-from surface_dynamics import CylinderDiagram
+# from surface_dynamics import CylinderDiagram
 
 
 def initialization_coordinates(D, i=1):
@@ -27,6 +26,78 @@ def initialization_coordinates(D, i=1):
                1/6*x - 1/2, 6, -1/12*x + 7/12]
 
     [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = eval("WHD"+str(D)+"_"+str(i))
+
+# dictionary i -> N candidates
+
+def model8(slit, t1, t2):
+        p0 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
+                      ring=K)
+        p1 = polygons(vertices=[(0, 0), (slit, 0), (WC1+slit, 0),
+                                (2*WC1+slit, 0), (WC2, 0), (WC2+t2, HC2),
+                                (WC2-WC1+t2, HC2), (WC1+slit+t2, HC2),
+                                (WC1+t2, HC2), (t2, HC2)],
+                      ring=K)
+        p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
+                      ring=K)
+        surface = Surface_dict(base_ring=K)
+        surface.add_polygon(p0, label=0)
+        surface.add_polygon(p1, label=1)
+        surface.add_polygon(p2, label=2)
+        surface.change_base_label(0)
+        surface.change_edge_gluing(0, 0, 1, 8)
+        surface.change_edge_gluing(0, 1, 0, 3)
+        surface.change_edge_gluing(0, 2, 1, 2)
+        surface.change_edge_gluing(1, 0, 1, 7)
+        surface.change_edge_gluing(1, 1, 2, 2)
+        surface.change_edge_gluing(1, 3, 1, 6)
+        surface.change_edge_gluing(1, 4, 1, 9)
+        surface.change_edge_gluing(1, 5, 2, 0)
+        surface.change_edge_gluing(2, 1, 2, 3)
+        return TranslationSurface(surface)
+
+x = var('x')
+CANDIDATES_8_5 = [[1/12*x - 5/12, 1/6*x - 2/3, 1/12*x + 19/12],
+                  [1/12*x - 5/12, 1/6*x, 1/12*x + 19/12],
+                  [5/12*x - 25/12, -1/6*x + 1, 5/12*x - 1/12],
+                  [5/12*x - 25/12, -1/6*x + 5/3, 5/12*x - 1/12],
+                  [-5/12*x + 11/4, 1/3*x - 7/6, -5/12*x + 11/4],
+                  [-1/4*x + 23/12, 1/6*x, -1/4*x + 23/12],
+                  [1/12*x + 1/4, 1/3*x - 7/6, 1/12*x + 9/4],
+                  [1/4*x - 7/12, 1/12*x + 1/12, 1/4*x + 13 / 12],
+                  [1/4*x - 7/12, 1/6*x, 1/4*x + 17/12],
+                  [1/4*x + 1/12, -1/6*x + 1, 1/4*x + 1/12],
+                  [1/4*x + 1/12, -1/12*x + 11/12, 1/4*x + 5/12],
+                  [5/12*x - 3/4, -1/3*x + 13/6, 5/12*x - 3 / 4],
+                  [3/4*x - 29/12, -1/6*x + 1, 3/4*x - 5/12],
+                  [11/12*x - 13/4, -1/3*x + 13/6, 11/12*x - 5/4],
+                  [1/12*x + 19/12, 1/6*x - 2/3, 1/12*x + 19/12],
+                  [7/12*x - 5/4, 1/3*x - 7/6, 1/12*x + 1/4],
+                  [1/12*x + 19/12, 1/6*x, 1/12*x + 19/12],
+                  [3/4*x - 25/12, 1/6*x - 1/3, 1/4*x - 7/12],
+                  [5/12*x - 1/12, -1/6*x + 1, 5/12*x - 1/12],
+                  [5/12*x - 1/12, -1/6*x + 5/3, 5/12*x - 1/12]]
+
+CANDIDATES = {(8, 5): CANDIDATES_8_5}
+MODELS = {8: model8}
+FIELDS = {5: QuadraticField(33, 'x')}
+
+def test_candidates():
+    for (sd, reduced_matrix) in CANDIDATES:
+        pass
+        
+
+def test_candidate(sd, reduced_matrix):
+    for [slit, t1, t2] in CANDIDATES[(sd, reduced_matrix)]:
+        print(slit, parent(slit))
+        s = MODELS[sd](slit, t1, t2)
+        O = GL2ROrbitClosure(s)
+        if not O.is_teichmueller_curve(3, 50):
+            continue
+        else:
+            assert False
+
+    return True 
+
 
 # # Model 1 -- No TCurves
 
