@@ -155,9 +155,10 @@ def model8(slit, t1, t2):
 ## Dictionnary of the candidates
 ## Candidates_k_l is the list of [slit,t1,t2] parameters for all candidates with model k \in [[1,8]] and reduced matrix l \in [[1,7]]
 ## The following list comes from the file Section_8.2.sage which is attached to Lanneau-Möller [LM18]. More precisely:
-## The function "Solve_problem(D,i,model)" gives the corresponding list of parameters where 
+## The function "solve_problem(D,i,model)" gives the corresponding list of parameters* where 
 #      - model is the model k \in [[1,8]] 
 #      - (D,i) correspond to the reduced matrix which corresponds to l \in [[1,7]] via 1=(2,1), 2=(3,1), 3=(3,2), 4=(3,3), 5=(33,1), 6=(33,2) and 7=(33,3)
+# *in fact, to get the parameters you have to replace the last line of the function solve_problem by "return listofproto" instead of "return to_discriminant(listofproto)".
 
 R = QQ['x']
 
@@ -750,56 +751,56 @@ def test_candidate(sd, reduced_matrix):
 # # In[ ]:
 
 # Construction of the translation surfaces for the model 8.
-def check_model8():
-    def model8(slit, t1, t2):
-        p0 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
-                      ring=K)
-        p1 = polygons(vertices=[(0, 0), (slit, 0), (WC1+slit, 0),
-                                (2*WC1+slit, 0), (WC2, 0), (WC2+t2, HC2),
-                                (WC2-WC1+t2, HC2), (WC1+slit+t2, HC2),
-                                (WC1+t2, HC2), (t2, HC2)],
-                      ring=K)
-        p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
-                      ring=K)
-        surface = Surface_dict(base_ring=K)
-        surface.add_polygon(p0, label=0)
-        surface.add_polygon(p1, label=1)
-        surface.add_polygon(p2, label=2)
-        surface.change_base_label(0)
-        surface.change_edge_gluing(0, 0, 1, 8)
-        surface.change_edge_gluing(0, 1, 0, 3)
-        surface.change_edge_gluing(0, 2, 1, 2)
-        surface.change_edge_gluing(1, 0, 1, 7)
-        surface.change_edge_gluing(1, 1, 2, 2)
-        surface.change_edge_gluing(1, 3, 1, 6)
-        surface.change_edge_gluing(1, 4, 1, 9)
-        surface.change_edge_gluing(1, 5, 2, 0)
-        surface.change_edge_gluing(2, 1, 2, 3)
-        return TranslationSurface(surface)
+#def check_model8():
+#    def model8(slit, t1, t2):
+#        p0 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
+#                      ring=K)
+#        p1 = polygons(vertices=[(0, 0), (slit, 0), (WC1+slit, 0),
+#                                (2*WC1+slit, 0), (WC2, 0), (WC2+t2, HC2),
+#                                (WC2-WC1+t2, HC2), (WC1+slit+t2, HC2),
+#                                (WC1+t2, HC2), (t2, HC2)],
+#                      ring=K)
+#        p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
+#                      ring=K)
+#        surface = Surface_dict(base_ring=K)
+#        surface.add_polygon(p0, label=0)
+#        surface.add_polygon(p1, label=1)
+#        surface.add_polygon(p2, label=2)
+#        surface.change_base_label(0)
+#        surface.change_edge_gluing(0, 0, 1, 8)
+#        surface.change_edge_gluing(0, 1, 0, 3)
+#        surface.change_edge_gluing(0, 2, 1, 2)
+#        surface.change_edge_gluing(1, 0, 1, 7)
+#        surface.change_edge_gluing(1, 1, 2, 2)
+#        surface.change_edge_gluing(1, 3, 1, 6)
+#        surface.change_edge_gluing(1, 4, 1, 9)
+#        surface.change_edge_gluing(1, 5, 2, 0)
+#        surface.change_edge_gluing(2, 1, 2, 3)
+#        return TranslationSurface(surface)
 
-    initialization_coordinates(33, 1)
-    # The only candidates are for D=33 and i=1, there are 20 candidates
-    candidates = [[1/12*x - 5/12, 1/6*x - 2/3, 1/12*x + 19/12],
-                  [1/12*x - 5/12, 1/6*x, 1/12*x + 19/12],
-                  [5/12*x - 25/12, -1/6*x + 1, 5/12*x - 1/12],
-                  [5/12*x - 25/12, -1/6*x + 5/3, 5/12*x - 1/12],
-                  [-5/12*x + 11/4, 1/3*x - 7/6, -5/12*x + 11/4],
-                  [-1/4*x + 23/12, 1/6*x, -1/4*x + 23/12],
-                  [1/12*x + 1/4, 1/3*x - 7/6, 1/12*x + 9/4],
-                  [1/4*x - 7/12, 1/12*x + 1/12, 1/4*x + 13 / 12],
-                  [1/4*x - 7/12, 1/6*x, 1/4*x + 17/12],
-                  [1/4*x + 1/12, -1/6*x + 1, 1/4*x + 1/12],
-                  [1/4*x + 1/12, -1/12*x + 11/12, 1/4*x + 5/12],
-                  [5/12*x - 3/4, -1/3*x + 13/6, 5/12*x - 3 / 4],
-                  [3/4*x - 29/12, -1/6*x + 1, 3/4*x - 5/12],
-                  [11/12*x - 13/4, -1/3*x + 13/6, 11/12*x - 5/4],
-                  [1/12*x + 19/12, 1/6*x - 2/3, 1/12*x + 19/12],
-                  [7/12*x - 5/4, 1/3*x - 7/6, 1/12*x + 1/4],
-                  [1/12*x + 19/12, 1/6*x, 1/12*x + 19/12],
-                  [3/4*x - 25/12, 1/6*x - 1/3, 1/4*x - 7/12],
-                  [5/12*x - 1/12, -1/6*x + 1, 5/12*x - 1/12],
-                  [5/12*x - 1/12, -1/6*x + 5/3, 5/12*x - 1/12]]
-    for [slit, t1, t2] in candidates:
-        s8 = model8(slit, t1, t2)
-        O = GL2ROrbitClosure(s8)
-        print(O.is_teichmueller_curve(3, 50))
+#    initialization_coordinates(33, 1)
+#    # The only candidates are for D=33 and i=1, there are 20 candidates
+#    candidates = [[1/12*x - 5/12, 1/6*x - 2/3, 1/12*x + 19/12],
+#                  [1/12*x - 5/12, 1/6*x, 1/12*x + 19/12],
+#                  [5/12*x - 25/12, -1/6*x + 1, 5/12*x - 1/12],
+#                  [5/12*x - 25/12, -1/6*x + 5/3, 5/12*x - 1/12],
+#                  [-5/12*x + 11/4, 1/3*x - 7/6, -5/12*x + 11/4],
+#                  [-1/4*x + 23/12, 1/6*x, -1/4*x + 23/12],
+#                  [1/12*x + 1/4, 1/3*x - 7/6, 1/12*x + 9/4],
+#                  [1/4*x - 7/12, 1/12*x + 1/12, 1/4*x + 13 / 12],
+#                  [1/4*x - 7/12, 1/6*x, 1/4*x + 17/12],
+#                  [1/4*x + 1/12, -1/6*x + 1, 1/4*x + 1/12],
+#                  [1/4*x + 1/12, -1/12*x + 11/12, 1/4*x + 5/12],
+#                  [5/12*x - 3/4, -1/3*x + 13/6, 5/12*x - 3 / 4],
+#                  [3/4*x - 29/12, -1/6*x + 1, 3/4*x - 5/12],
+#                  [11/12*x - 13/4, -1/3*x + 13/6, 11/12*x - 5/4],
+#                  [1/12*x + 19/12, 1/6*x - 2/3, 1/12*x + 19/12],
+#                  [7/12*x - 5/4, 1/3*x - 7/6, 1/12*x + 1/4],
+#                  [1/12*x + 19/12, 1/6*x, 1/12*x + 19/12],
+#                  [3/4*x - 25/12, 1/6*x - 1/3, 1/4*x - 7/12],
+#                  [5/12*x - 1/12, -1/6*x + 1, 5/12*x - 1/12],
+#                  [5/12*x - 1/12, -1/6*x + 5/3, 5/12*x - 1/12]]
+#    for [slit, t1, t2] in candidates:
+#        s8 = model8(slit, t1, t2)
+#        O = GL2ROrbitClosure(s8)
+#        print(O.is_teichmueller_curve(3, 50))
