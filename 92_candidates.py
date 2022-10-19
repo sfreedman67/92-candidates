@@ -224,7 +224,7 @@ CANDIDATES_5_3 = matrix(R, [[-7/12*x + 5/4, 11/24*x - 2/3, -1/12*x + 3/4],
                             [-5/12*x + 13/12, 3/8*x - 1/12, 1/12*x + 7/12],
                             [-5/12*x + 13/12, 1/8*x + 7/12, 5/12*x - 1/12],
                             [1/12*x + 1/4, 11/24*x - 2/3, -1/12*x + 3/4],
-                            [1/12*x + 1/4, 1/24*x + 1/6, 7/12*x - 1/4]]
+                            [1/12*x + 1/4, 1/24*x + 1/6, 7/12*x - 1/4]])
 
 CANDIDATES_6_3 = matrix(R, [[1/12*x - 1/12, 5/24*x + 1/3, 1/12*x + 11/12],
                             [-1/12*x + 5/12, 3/8*x + 1/12, -1/12*x + 17/12],
@@ -304,13 +304,13 @@ CANDIDATES = {(1, 1): CANDIDATES_1_1,
 MODELS = {1: model1, 2: model2, 4: model4, 5: model5, 6:model6, 7: model7, 8: model8}
                        
 # The dictionnary SIZE_CYLINDERS gives the parameters WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2 (see section 6.3-6.5 of Lanneau-Möller [LM18]) associated to each reduced matrix l \in [[1,7]]
-SIZE_CYLINDERS = {1: [1, 1, 48*x + 72, -1/12*x + 1/8, 1/2*x,2*x, 36*x + 48, 1/4*x - 1/3],
-                  2: [1, 1, 24*x + 48, -1/24*x + 1/12, 1/2*x - 1/2, 2*x - 2, 12*x + 12, 1/4*x - 5/12],
-                  3: [1, 1, 96*x + 168, -1/24*x + 1/12, 1/2*x + 1/2, 2*x + 2, 36*x + 60, 1/4*x - 5/12],
-                  4: [1, 1, 20*x + 36, -1/12*x + 1/6, x, 2/3*x, 8*x + 12, 1/2*x - 5/6],
-                  5: [1, 1, 2*x + 12, -1/6*x + 1, 1/2*x + 3/2, 1/6*x + 1/2, 9*x + 51, 1/12*x - 5/12],
-                  6: [1, 1, 1/2*x + 9/2, -1/6*x + 1, 1/2*x - 3/2, 1/6*x - 1/2, 3*x + 15, 1/12*x - 5/12],
-                  7: [1, 1, 1/2*x + 3/2, 1/12*x - 1/4, 1/2*x - 3/2, 1/6*x - 1/2, 6, -1/12*x + 7/12]}
+SIZE_CYLINDERS = {1: matrix(R, [[1, 1, 48*x + 72, -1/12*x + 1/8, 1/2*x,2*x, 36*x + 48, 1/4*x - 1/3]]),
+                  2: matrix(R, [1, 1, 24*x + 48, -1/24*x + 1/12, 1/2*x - 1/2, 2*x - 2, 12*x + 12, 1/4*x - 5/12]]),
+                  3: matrix(R, [1, 1, 96*x + 168, -1/24*x + 1/12, 1/2*x + 1/2, 2*x + 2, 36*x + 60, 1/4*x - 5/12]]),
+                  4: matrix(R, [1, 1, 20*x + 36, -1/12*x + 1/6, x, 2/3*x, 8*x + 12, 1/2*x - 5/6]]),
+                  5: matrix(R, [1, 1, 2*x + 12, -1/6*x + 1, 1/2*x + 3/2, 1/6*x + 1/2, 9*x + 51, 1/12*x - 5/12]]),
+                  6: matrix(R, [1, 1, 1/2*x + 9/2, -1/6*x + 1, 1/2*x - 3/2, 1/6*x - 1/2, 3*x + 15, 1/12*x - 5/12]]),
+                  7: matrix(R, [1, 1, 1/2*x + 3/2, 1/12*x - 1/4, 1/2*x - 3/2, 1/6*x - 1/2, 6, -1/12*x + 7/12]])}
                      
 FIELDS = {1: QuadraticField(2, name='x'), #D=2, i=1
           2: QuadraticField(3, name='x'), #D=3, i=1
@@ -323,20 +323,24 @@ FIELDS = {1: QuadraticField(2, name='x'), #D=2, i=1
 
 def test_candidates():
     for (sd, reduced_matrix) in CANDIDATES:
-        test_candidate(sd,reduced_matrix)
+        print(test_candidate(sd,reduced_matrix))
 
 
-def test_candidate(sd, reduced_matrix):
-    WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2 = SIZE_CYLINDERS[reduced_matrix]
+def test_candidate(sd, reduced_matrix):                 
+    sizes = SIZE_CYLINDERS[reduced_matrix]     #Initialize the sizes of the cylinders corresponding to each reduced matrix   
+    for x in sizes:
+        x = FIELDS[reduced_matrix](x)          #Make the sizes lie in the correct quadratic field
+    [[WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2]] = sizes
+    
     for parameters in CANDIDATES[(sd, reduced_matrix)]:
         for x in parameters:
-            x = FIELDS[reduced_matrix](x)
+            x = FIELDS[reduced_matrix](x)      #Initialize the parameters so that they lie in the correct quadratic field
 
         slit, t1, t2 = parameters
 
-        s = MODELS[sd](slit, t1, t2)
-        O = GL2ROrbitClosure(s)
-        if not O.is_teichmueller_curve(3, 50):
+        s = MODELS[sd](slit, t1, t2)           #Construct the corresponding surface
+        O = GL2ROrbitClosure(s)                #Compute the orbit closure of the surface
+        if not O.is_teichmueller_curve(3, 50): #Check if it corresponds to a Teichmüller curve using a flatsurf routine
             continue
         else:
             assert False
