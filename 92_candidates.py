@@ -27,9 +27,6 @@ def initialization_coordinates(D, i=1):
 
     [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = eval("WHD"+str(D)+"_"+str(i))
 
-# dictionary i -> N candidates
-
-
 def model8(slit, t1, t2):
     p0 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
                   ring=K)
