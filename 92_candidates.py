@@ -2,12 +2,10 @@
 # coding: utf-8
 
 # from flatsurf import *
-from sage.all_cmdline import *   # import sage library
-# from surface_dynamics import CylinderDiagram
+from sage.all import *
 
 # Construction of the 7 models
-# (there are no candidates in model 3, so we don't need to consider it).
-
+# (there are no candidates in model 3, so we don't consider it).
 
 def model1(slit, t1, t2, reduced_matrix):
     # Initialize sizes of the cylinders corresponding to each reduced matrix
