@@ -5,33 +5,6 @@
 from sage.all_cmdline import *   # import sage library
 # from surface_dynamics import CylinderDiagram
 
-
-<<<<<<< HEAD
-def initialization_coordinates(D, i=1):
-    global K, x, WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2
-    K = QuadraticField(D)
-    x = K.gen()
-
-    WHD2_1 = [1, 1, 48*x + 72, -1/12*x + 1/8, 1/2*x,
-              2*x, 36*x + 48, 1/4*x - 1/3]
-    WHD3_1 = [1, 1, 24*x + 48, -1/24*x + 1/12, 1/2*x - 1/2,
-              2*x - 2, 12*x + 12, 1/4*x - 5/12]
-    WHD3_2 = [1, 1, 96*x + 168, -1/24*x + 1/12, 1/2*x + 1/2,
-              2*x + 2, 36*x + 60, 1/4*x - 5/12]
-    WHD3_3 = [1, 1, 20*x + 36, -1/12*x + 1/6, x, 2/3*x, 8*x + 12, 1/2*x - 5/6]
-    WHD33_1 = [1, 1, 2*x + 12, -1/6*x + 1, 1/2*x + 3/2,
-               1/6*x + 1/2, 9*x + 51, 1/12*x - 5/12]
-    WHD33_2 = [1, 1, 1/2*x + 9/2, -1/6*x + 1, 1/2*x - 3/2,
-               1/6*x - 1/2, 3*x + 15, 1/12*x - 5/12]
-    WHD33_3 = [1, 1, 1/2*x + 3/2, 1/12*x - 1/4, 1/2*x - 3/2,
-               1/6*x - 1/2, 6, -1/12*x + 7/12]
-
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = eval("WHD"+str(D)+"_"+str(i))
-
-def model8(slit, t1, t2):
-    p0 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
-                  ring=K)
-=======
 ## Construction of the 7 models (there are no candidates in model 3, so we don't need to consider it).
 
 def model1(slit, t1, t2, reduced_matrix):
@@ -164,7 +137,6 @@ def model7(slit, t1, t2, reduced_matrix):
 def model8(slit, t1, t2, reduced_matrix):
     [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],ring=FIELDS[reduced_matrix])
->>>>>>> 060a98d7f178ec94e1626cbed20e1cace4f22c7c
     p1 = polygons(vertices=[(0, 0), (slit, 0), (WC1+slit, 0),
                             (2*WC1+slit, 0), (WC2, 0), (WC2+t2, HC2),
                             (WC2-WC1+t2, HC2), (WC1+slit+t2, HC2),
