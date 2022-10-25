@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# from flatsurf import *
+from flatsurf import *
 from sage.all import *
 
 # Construction of the 7 models
@@ -366,7 +366,7 @@ CANDIDATES = {(1, 1): CANDIDATES_1_1,
               (6, 3): CANDIDATES_6_3,
               (6, 4): CANDIDATES_6_4,
               (6, 5): CANDIDATES_6_5,
-              (7, 5): CANDIDATES_7_5
+              (7, 5): CANDIDATES_7_5,
               (8, 5): CANDIDATES_8_5}
 MODELS = {1: model1, 2: model2, 4: model4,
           5: model5, 6: model6, 7: model7, 8: model8}
