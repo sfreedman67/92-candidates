@@ -8,12 +8,14 @@ from sage.all_cmdline import *   # import sage library
 
 ## Construction of the 7 models (there are no candidates in model 3, so we don't need to consider it).
 
-def model1(slit, t1, t2):
-# This function requires that WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2 are already initialized, as well as D (with x = sqrt(D)) and i (corresponding to the reduced matrix)
-    p0 = polygons(vertices = [(0,0), (WC1-WC2,0), (WC1-WC2+slit,0), (WC1,0),(WC1+t1,HC1),(WC1-WC2+t1,HC1),(t1,HC1)], ring=K)
-    p1 = polygons(vertices = [(0,0),(WC2,0),(WC2+t2,HC2),(t2,HC2)], ring=K)
-    p2 = polygons(vertices = [(0,0), (WC1-WC2,0), (WC1,0),(WC1+t1,HC1), (WC1-slit+t1, HC1),(WC1-WC2+t1,HC1),(t1,HC1)], ring=K)
-    surface = Surface_dict(base_ring=K)
+def model1(slit, t1, t2, reduced_matrix):
+    #Initialize the sizes of the cylinders corresponding to each reduced matrix
+    #Make the sizes lie in the correct quadratic field
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = polygons(vertices = [(0,0), (WC1-WC2,0), (WC1-WC2+slit,0), (WC1,0),(WC1+t1,HC1),(WC1-WC2+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    p1 = polygons(vertices = [(0,0),(WC2,0),(WC2+t2,HC2),(t2,HC2)], ring=FIELDS[reduced_matrix])
+    p2 = polygons(vertices = [(0,0), (WC1-WC2,0), (WC1,0),(WC1+t1,HC1), (WC1-slit+t1, HC1),(WC1-WC2+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
     surface.add_polygon(p0,label=0)
     surface.add_polygon(p1,label=1)
     surface.add_polygon(p2,label=2)
@@ -29,11 +31,12 @@ def model1(slit, t1, t2):
     surface.change_edge_gluing(2,5,2,0)
     return TranslationSurface(surface)
 
-def model2(slit, t1, t2):
-    p0 = polygons(vertices = [(0,0), (slit,0), (WC1,0), (WC1+t1,HC1),(WC1-WC2+t1,HC1),(slit+t1,HC1),(t1,HC1)], ring=K)
-    p1 = polygons(vertices = [(0,0),(WC2,0), (WC2+t2,HC2),(t2,HC2)], ring=K)
-    p2 = polygons(vertices = [(0,0), (WC2,0), (WC1-slit,0),(WC1,0), (WC1+t1,HC1),(WC1-slit+t1,HC1),(t1,HC1)], ring=K)
-    surface = Surface_dict(base_ring=K)
+def model2(slit, t1, t2, reduced_matrix):
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = polygons(vertices = [(0,0), (slit,0), (WC1,0), (WC1+t1,HC1),(WC1-WC2+t1,HC1),(slit+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    p1 = polygons(vertices = [(0,0),(WC2,0), (WC2+t2,HC2),(t2,HC2)], ring=FIELDS[reduced_matrix])
+    p2 = polygons(vertices = [(0,0), (WC2,0), (WC1-slit,0),(WC1,0), (WC1+t1,HC1),(WC1-slit+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
     surface.add_polygon(p0,label=0)
     surface.add_polygon(p1,label=1)
     surface.add_polygon(p2,label=2)
@@ -49,30 +52,32 @@ def model2(slit, t1, t2):
     surface.change_edge_gluing(1,2,2,0)
     return TranslationSurface(surface)
 
-def model4(slit, t1, t2):
-    c1 = c3 = polygons((slit, 0), (WC1 - slit, 0), (t1, HC1),(-WC1 + slit, 0), (- slit, 0), (-t1, -HC1))
-    c2 = polygons((WC2-slit,0), (slit,0), (t2, HC2), (- slit,0), (-(WC2-slit), 0), (-t2, -HC2))
-    surface = Surface_dict(base_ring=K)
-    surface.add_polygon(c1,label=1)
-    surface.add_polygon(c2,label=2)
-    surface.add_polygon(c3,label=3)
+def model4(slit, t1, t2, reduced_matrix):
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = p2 = polygons(vertices = [(0,0), (WC1-slit, 0), (WC1, 0), (WC1+t1, HC1),(t1 +WC1-slit, HC1), (t1, HC1)], ring=FIELDS[reduced_matrix])
+    p1 = polygons(vertices = [(0,0), (slit,0), (WC2,0), (WC2+t2, HC2), (t2+slit,HC2), (t2, HC2)], ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
+    surface.add_polygon(p0,label=0)
+    surface.add_polygon(p1,label=1)
+    surface.add_polygon(p2,label=2)
     surface.change_base_label(2)
-    surface.change_edge_gluing(1, 0, 1, 4)
-    surface.change_edge_gluing(1, 1, 2, 3)
+    surface.change_edge_gluing(0, 0, 0, 4)
+    surface.change_edge_gluing(0, 1, 1, 4)
+    surface.change_edge_gluing(0, 2, 0, 5)
+    surface.change_edge_gluing(1, 0, 2, 3)
+    surface.change_edge_gluing(1, 1, 1, 3)
     surface.change_edge_gluing(1, 2, 1, 5)
     surface.change_edge_gluing(2, 0, 2, 4)
-    surface.change_edge_gluing(2, 1, 3, 3)
+    surface.change_edge_gluing(2, 1, 0, 3)
     surface.change_edge_gluing(2, 2, 2, 5)
-    surface.change_edge_gluing(3, 0, 3, 4)
-    surface.change_edge_gluing(3, 1, 1, 3)
-    surface.change_edge_gluing(3, 2, 3, 5)
     return TranslationSurface(surface)
 
-def model5(slit, t1, t2):
-    p0 = polygons(vertices = [(0,0), (WC1-slit,0), (WC1,0), (WC1+t1,HC1),(2*WC1-WC2-slit+t1,HC1),(t1,HC1)], ring=K)
-    p1 = polygons(vertices = [(0,0),(WC2-WC1+slit,0),(WC2,0), (WC2+t2,HC2),(WC2-WC1+slit+t2,HC2),(t2,HC2)], ring=K)
-    p2 = polygons(vertices = [(0,0), (2*WC1-WC2-slit,0), (WC1,0), (WC1+t1,HC1),(WC1-slit+t1,HC1),(t1,HC1)], ring=K)
-    surface = Surface_dict(base_ring=K)
+def model5(slit, t1, t2, reduced_matrix):
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = polygons(vertices = [(0,0), (WC1-slit,0), (WC1,0), (WC1+t1,HC1),(2*WC1-WC2-slit+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    p1 = polygons(vertices = [(0,0),(WC2-WC1+slit,0),(WC2,0), (WC2+t2,HC2),(WC2-WC1+slit+t2,HC2),(t2,HC2)], ring=FIELDS[reduced_matrix])
+    p2 = polygons(vertices = [(0,0), (2*WC1-WC2-slit,0), (WC1,0), (WC1+t1,HC1),(WC1-slit+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
     surface.add_polygon(p0,label=0)
     surface.add_polygon(p1,label=1)
     surface.add_polygon(p2,label=2)
@@ -88,11 +93,12 @@ def model5(slit, t1, t2):
     surface.change_edge_gluing(2,2,2,5)
     return TranslationSurface(surface)
 
-def model6(slit,t1,t2):
-    p0 = polygons(vertices = [(0,0), (slit,0), (WC1,0), (WC1+t1,HC1),(t1,HC1)], ring=K)
-    p1 = polygons(vertices = [(0,0),(WC1,0),(WC1+slit,0),(WC2,0), (WC2+t2,HC2),(WC1+slit+t2,HC2),(slit+t2,HC2),(t2,HC2)], ring=K)
-    p2 = polygons(vertices = [(0,0), (WC1,0), (WC1+t1,HC1),(WC1-slit+t1,HC1),(t1,HC1)], ring=K)
-    surface = Surface_dict(base_ring=K)
+def model6(slit, t1, t2, reduced_matrix):
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = polygons(vertices = [(0,0), (slit,0), (WC1,0), (WC1+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    p1 = polygons(vertices = [(0,0),(WC1,0),(WC1+slit,0),(WC2,0), (WC2+t2,HC2),(WC1+slit+t2,HC2),(slit+t2,HC2),(t2,HC2)], ring=FIELDS[reduced_matrix])
+    p2 = polygons(vertices = [(0,0), (WC1,0), (WC1+t1,HC1),(WC1-slit+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
     surface.add_polygon(p0,label=0)
     surface.add_polygon(p1,label=1)
     surface.add_polygon(p2,label=2)
@@ -108,11 +114,12 @@ def model6(slit,t1,t2):
     surface.change_edge_gluing(2,1,2,4)
     return TranslationSurface(surface)
 
-def model7(slit, t1, t2):
-    p0 = polygons(vertices = [(0,0),(WC1,0), (WC1+t1,HC1),(t1,HC1)], ring=K)
-    p1 = polygons(vertices = [(0,0),(WC1,0),(WC1+slit,0),(2*WC1+slit,0),(WC2,0), (WC2+t2,HC2),(2*WC1+slit+t2,HC2),(WC1+slit+t2,HC2),(WC1+t2,HC2),(t2,HC2)], ring=K)
-    p2 = polygons(vertices = [(0,0), (WC1,0), (WC1+t1,HC1),(t1,HC1)], ring=K)
-    surface = Surface_dict(base_ring=K)
+def model7(slit, t1, t2, reduced_matrix):
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = polygons(vertices = [(0,0),(WC1,0), (WC1+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    p1 = polygons(vertices = [(0,0),(WC1,0),(WC1+slit,0),(2*WC1+slit,0),(WC2,0), (WC2+t2,HC2),(2*WC1+slit+t2,HC2),(WC1+slit+t2,HC2),(WC1+t2,HC2),(t2,HC2)], ring=FIELDS[reduced_matrix])
+    p2 = polygons(vertices = [(0,0), (WC1,0), (WC1+t1,HC1),(t1,HC1)], ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
     surface.add_polygon(p0,label=0)
     surface.add_polygon(p1,label=1)
     surface.add_polygon(p2,label=2)
@@ -128,15 +135,14 @@ def model7(slit, t1, t2):
     surface.change_edge_gluing(2,1,2,3)
     return TranslationSurface(surface)
 
-def model8(slit, t1, t2):
-    p0 = p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
-                  ring=K)
+def model8(slit, t1, t2, reduced_matrix):
+    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
+    p0 = p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],ring=FIELDS[reduced_matrix])
     p1 = polygons(vertices=[(0, 0), (slit, 0), (WC1+slit, 0),
                             (2*WC1+slit, 0), (WC2, 0), (WC2+t2, HC2),
                             (WC2-WC1+t2, HC2), (WC1+slit+t2, HC2),
-                            (WC1+t2, HC2), (t2, HC2)],
-                  ring=K)
-    surface = Surface_dict(base_ring=K)
+                            (WC1+t2, HC2), (t2, HC2)],ring=FIELDS[reduced_matrix])
+    surface = Surface_dict(base_ring=FIELDS[reduced_matrix])
     surface.add_polygon(p0, label=0)
     surface.add_polygon(p1, label=1)
     surface.add_polygon(p2, label=2)
@@ -321,31 +327,21 @@ FIELDS = {1: QuadraticField(2, name='x'), #D=2, i=1
           7: QuadraticField(33, name='x')} #D=33, i=3
 
 
-def test_candidates():
-    for (sd, reduced_matrix) in CANDIDATES:
-        print(test_candidate(sd,reduced_matrix))
-
-
 def test_candidate(sd, reduced_matrix):                 
-    sizes = SIZE_CYLINDERS[reduced_matrix]     #Initialize the sizes of the cylinders corresponding to each reduced matrix   
-    for x in sizes:
-        x = FIELDS[reduced_matrix](x)          #Make the sizes lie in the correct quadratic field
-    [[WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2]] = sizes
-    
     for parameters in CANDIDATES[(sd, reduced_matrix)]:
-        for x in parameters:
-            x = FIELDS[reduced_matrix](x)      #Initialize the parameters so that they lie in the correct quadratic field
-
-        slit, t1, t2 = parameters
-
-        s = MODELS[sd](slit, t1, t2)           #Construct the corresponding surface
-        O = GL2ROrbitClosure(s)                #Compute the orbit closure of the surface
-        if not O.is_teichmueller_curve(3, 50): #Check if it corresponds to a Teichmüller curve using a flatsurf routine
+        slit, t1, t2 = [FIELDS[reduced_matrix](x) for x in parameters]  #Initialize the parameters so that they lie in the correct quadratic field
+        s = MODELS[sd](slit, t1, t2,reduced_matrix)                     #Construct the corresponding surface
+        O = GL2ROrbitClosure(s)                                         #Compute the orbit closure of the surface
+        if not O.is_teichmueller_curve(3, 50):                          #Check if it corresponds to a Teichmüller curve using a flatsurf routine
             continue
         else:
             assert False
 
     return "No Teichmueller curves found for model", sd, "and reduced matrix", reduced_matrix 
+
+def test_candidates():
+    for (sd, reduced_matrix) in CANDIDATES:
+        print(test_candidate(sd,reduced_matrix))
 
 
 # # Model 1 -- No TCurves
