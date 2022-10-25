@@ -7,6 +7,7 @@ from sage.all import *
 # Construction of the 7 models
 # (there are no candidates in model 3, so we don't consider it).
 
+
 def model1(slit, t1, t2, reduced_matrix):
     # Initialize sizes of the cylinders corresponding to each reduced matrix
     # Make the sizes lie in the correct quadratic field
@@ -210,18 +211,26 @@ def model8(slit, t1, t2, reduced_matrix):
 
 
 """
-Dictionary of the candidates
-Candidates_k_l is the list of [slit,t1,t2] parameters
-for all candidates with model k in [[1,8]] and reduced matrix l in [[1,7]]
-The following list comes from the file Section_8.2.sage,
-which is attached to Lanneau-Möller [LM18].
-More precisely:
-The function "solve_problem(D,i,model)" gives the
-corresponding list of parameters* where
-     - model is the model k in [[1,8]]
-     - (D,i) correspond to the reduced matrix, which corresponds to
-        l in [[1,7]] via 1=(2,1), 2=(3,1), 3=(3,2), 4=(3,3), 5=(33,1),
-        6=(33,2) and 7=(33,3)
+`CANDIDATES_k_l` is the list of `[slit,t1,t2]` parameters
+for all candidate surfaces with
+    - model `k` in `[[1,8]]` and
+    - reduced matrix `l` in `[[1,7]]`
+The following list comes from the file `Section_8.2.sage`,
+attached to Lanneau-Möller [LM18].
+
+More precisely: the function `solve_problem(D,i,model)` in their code
+gives the below list of parameters*, where
+     - `model` corresponds to separatrix diagram`k` in `[[1,8]]`
+     - `(D,i)` correspond to the reduced matrix, where
+        - `D` in `{2, 3, 33}` has square root generating the trace field,
+        - `i` denotes the possible reduced matrices having that trace field
+
+The relationship between our notation `l in [[1,7]]` for reduced matrices
+and theirs is:
+    - 1=(2,1),
+    - 2=(3,1), 3=(3,2), 4=(3,3),
+    - 5=(33,1), 6=(33,2), 7=(33,3).
+
 *in fact, to get the parameters you have to replace
 the last line of the function `solve_problem` by `return listofproto`
 instead of `return to_discriminant(listofproto)`.
@@ -368,6 +377,7 @@ CANDIDATES = {(1, 1): CANDIDATES_1_1,
               (6, 5): CANDIDATES_6_5,
               (7, 5): CANDIDATES_7_5,
               (8, 5): CANDIDATES_8_5}
+
 MODELS = {1: model1, 2: model2, 4: model4,
           5: model5, 6: model6, 7: model7, 8: model8}
 
