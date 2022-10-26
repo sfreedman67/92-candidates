@@ -4,13 +4,22 @@
 from flatsurf import *
 from sage.all import *
 
-# Construction of the 7 models
-# (there are no candidates in model 3, so we don't consider it).
-
+"""
+Construction of the 7 models
+(there are no candidates in model 3, so we don't consider it).
+"""
 
 def model1(slit, t1, t2, reduced_matrix):
-    # Initialize sizes of the cylinders corresponding to each reduced matrix
-    # Make the sizes lie in the correct quadratic field
+    r'''
+    Construct the surface with 
+        - separatrix diagram 1
+        - `reduced_matrix` -- the corresponding reduced matrix
+        - `slit`  -- the slit
+        - `t1` -- the twist of the first cylinder
+        - `t2` -- the twist of the second cylinder
+    Note that the data of the reduced matrix allows to define the trace field 
+    and the size of the cylinders WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2
+    '''
     [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (WC1-WC2, 0), (WC1-WC2+slit, 0),
@@ -41,6 +50,9 @@ def model1(slit, t1, t2, reduced_matrix):
 
 
 def model2(slit, t1, t2, reduced_matrix):
+    r'''
+    Same as model1 but for separatrix diagram equal to 2.
+    '''
     [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (slit, 0), (WC1, 0), (WC1+t1, HC1),
@@ -381,10 +393,12 @@ CANDIDATES = {(1, 1): CANDIDATES_1_1,
 MODELS = {1: model1, 2: model2, 4: model4,
           5: model5, 6: model6, 7: model7, 8: model8}
 
-# The dictionnary `SIZE_CYLINDERS` gives the parameters
-# WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2
-# (see section 6.3-6.5 of Lanneau-Möller [LM18])
-# associated to each reduced matrix l \in [[1,7]]
+"""
+The dictionnary `SIZE_CYLINDERS` gives the parameters
+WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2
+(see section 6.3-6.5 of Lanneau-Möller [LM18])
+associated to each reduced matrix l \in [[1,7]]
+"""
 
 SIZE_CYLINDERS = {1: matrix(R, [[1, 1, 48*x + 72, -1/12*x + 1/8, 1/2*x, 2*x,
                                  36*x + 48, 1/4*x - 1/3]]),
@@ -409,8 +423,30 @@ FIELDS = {1: QuadraticField(2, name='x'),  # D=2, i=1
           6: QuadraticField(33, name='x'),  # D=33, i=2
           7: QuadraticField(33, name='x')}  # D=33, i=3
 
+NUMBER_CANDIDATES = {(1, 1): 12,(1, 2): 8,(2, 1): 1,(4, 1): 3,(4, 2): 3,(4, 3): 3,(4, 4): 6,
+                     (5, 1): 4,(5, 3): 8,(6, 3): 3,(6, 4): 8,(6, 5): 7,(7, 5): 18,(8, 5): 20}
+
+
+def surface_candidate(sd,reduced_matrix,i):
+    r'''
+    Constructs the candidate surface number `i` associated to
+        - the model `sd` in [[1,8]]
+        - the reduced matrix number `reduced_matrix` in [[1,7]]
+    In particular, i should be smaller than  NUMBER_CANDIDATES[(sd,reduced_matrix)]
+    '''
+    assert i < NUMBER_CANDIDATES[(sd,reduced_matrix)], ("i should be smaller than ", NUMBER_CANDIDATES[(sd,reduced_matrix)])
+    slit, t1, t2 = [FIELDS[reduced_matrix](x) for x in CANDIDATES[(sd, reduced_matrix)][i]] 
+    s = MODELS[sd](slit, t1, t2,reduced_matrix)
+    return s
+
 
 def test_candidate(sd, reduced_matrix):
+    r'''
+    Constructs all candidates surfaces with 
+        - model number `sd`
+        - reduced matrix number `reduced_matrix`
+    And check that for each surface its orbit closure is not the one of a Teichmüller curve.
+    '''
     for parameters in CANDIDATES[(sd, reduced_matrix)]:
         # Initialize the parameters to lie in the correct quadratic field
         slit, t1, t2 = [FIELDS[reduced_matrix](x) for x in parameters]
@@ -426,5 +462,48 @@ def test_candidate(sd, reduced_matrix):
 
 
 def test_candidates():
+    r'''
+    Conduce the check of the previous function for all admissible pairs (sd,reduced_matrix).
+    '''
     for (sd, reduced_matrix) in CANDIDATES:
         print(test_candidate(sd, reduced_matrix))
+
+
+
+def find_decomposition_for_candidate(sd, reduced_matrix,i): 
+    r'''
+    gives an explicit direction such that the moduli of the cylinders is irrationnal.
+    The original code is part of the Flatsurf project and can be found here: 
+    https://flatsurf.github.io/sage-flatsurf/examples/apisa_wright.html
+    The entry i is the number of the candidate in CANDIDATES[(sd,reduced_matrix)],
+    it should be smaller than  NUMBER_CANDIDATES[(sd,reduced_matrix)]
+    '''
+    assert i < NUMBER_CANDIDATES[(sd,reduced_matrix)], ("i should be smaller than ", NUMBER_CANDIDATES[(sd,reduced_matrix)])
+    
+    slit, t1, t2 = [FIELDS[reduced_matrix](x) for x in CANDIDATES[(sd, reduced_matrix)][i]] 
+    s = MODELS[sd](slit, t1, t2,reduced_matrix)
+    O = GL2ROrbitClosure(s)
+        
+    old_dim = O.dimension() #It should be 2
+    for i, dec in enumerate(O.decompositions(16, bfs=True)):
+        O.update_tangent_space_from_flow_decomposition(dec)
+        new_dim = O.dimension()
+        if old_dim != new_dim:
+            holonomies = [cyl.circumferenceHolonomy() for cyl in dec.cylinders()]
+            areas = [cyl.area() for cyl in dec.cylinders()]
+            moduli = [(v.x()*v.x() + v.y()*v.y()) / area for v, area in zip(holonomies, areas)]
+            u = dec.vertical().vertical()
+            print("saddle connection number", i)
+            print("holonomy           :", u)
+            print("length             :", RDF(u.x()*u.x() + u.y()*u.y()).sqrt())
+            print("num cylinders      :", len(dec.cylinders()))
+#            print("num minimal comps. :", len(dec.minimalComponents()))
+#            print("current dimension  :", new_dim)
+            print("cyls. holonomies   :", holonomies)
+            print("cyls. moduli       :", moduli)
+            for i in range(1,len(moduli)):
+                if not moduli[0]==moduli[1]:
+                    print("The ratio of the first module over the module number", i+1,
+                          "is irrationnal and equal to", moduli[0]/moduli[1], 'in the', FIELDS[reduced_matrix])
+                    break
+            break
