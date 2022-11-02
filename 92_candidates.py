@@ -20,7 +20,7 @@ def model1(slit, t1, t2, reduced_matrix):
     Note that the data of the reduced matrix allows to define the trace field 
     and the size of the cylinders WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2
     '''
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (WC1-WC2, 0), (WC1-WC2+slit, 0),
                             (WC1, 0), (WC1+t1, HC1), (WC1-WC2+t1, HC1),
@@ -53,7 +53,7 @@ def model2(slit, t1, t2, reduced_matrix):
     r'''
     Same as model1 but for separatrix diagram equal to 2.
     '''
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (slit, 0), (WC1, 0), (WC1+t1, HC1),
                             (WC1-WC2+t1, HC1), (slit+t1, HC1), (t1, HC1)],
@@ -81,7 +81,7 @@ def model2(slit, t1, t2, reduced_matrix):
 
 
 def model4(slit, t1, t2, reduced_matrix):
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = p2 = polygons(vertices=[(0, 0), (WC1-slit, 0),
                                  (WC1, 0), (WC1+t1, HC1),
@@ -108,7 +108,7 @@ def model4(slit, t1, t2, reduced_matrix):
 
 
 def model5(slit, t1, t2, reduced_matrix):
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (WC1-slit, 0), (WC1, 0), (WC1+t1, HC1),
                             (2*WC1-WC2-slit+t1, HC1), (t1, HC1)],
@@ -137,7 +137,7 @@ def model5(slit, t1, t2, reduced_matrix):
 
 
 def model6(slit, t1, t2, reduced_matrix):
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (slit, 0), (WC1, 0),
                             (WC1+t1, HC1), (t1, HC1)],
@@ -167,7 +167,7 @@ def model6(slit, t1, t2, reduced_matrix):
 
 
 def model7(slit, t1, t2, reduced_matrix):
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1),
                             (t1, HC1)], ring=FIELDS[reduced_matrix])
@@ -196,7 +196,7 @@ def model7(slit, t1, t2, reduced_matrix):
 
 
 def model8(slit, t1, t2, reduced_matrix):
-    [WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2] = [
+    [WC1, HC1, WC2, HC2] = [
         FIELDS[reduced_matrix](x) for x in SIZE_CYLINDERS[reduced_matrix][0]]
     p0 = p2 = polygons(vertices=[(0, 0), (WC1, 0), (WC1+t1, HC1), (t1, HC1)],
                        ring=FIELDS[reduced_matrix])
@@ -242,6 +242,7 @@ and theirs is:
     - 1=(2,1),
     - 2=(3,1), 3=(3,2), 4=(3,3),
     - 5=(33,1), 6=(33,2), 7=(33,3).
+ (In fact, there are no candidates for the reduced matrices number 6 and 7)
 
 *in fact, to get the parameters you have to replace
 the last line of the function `solve_problem` by `return listofproto`
@@ -395,33 +396,26 @@ MODELS = {1: model1, 2: model2, 4: model4,
 
 """
 The dictionnary `SIZE_CYLINDERS` gives the parameters
-WC1, HC1, WZ1, HZ1, WC2, HC2, WZ2, HZ2
+WC1, HC1, WC2, HC2
 (see section 6.3-6.5 of Lanneau-Möller [LM18])
 associated to each reduced matrix l \in [[1,7]]
 """
 
-SIZE_CYLINDERS = {1: matrix(R, [[1, 1, 48*x + 72, -1/12*x + 1/8, 1/2*x, 2*x,
-                                 36*x + 48, 1/4*x - 1/3]]),
-                  2: matrix(R, [[1, 1, 24*x + 48, -1/24*x + 1/12, 1/2*x - 1/2,
-                                 2*x - 2, 12*x + 12, 1/4*x - 5/12]]),
-                  3: matrix(R, [[1, 1, 96*x + 168, -1/24*x + 1/12, 1/2*x + 1/2,
-                                 2*x + 2, 36*x + 60, 1/4*x - 5/12]]),
-                  4: matrix(R, [[1, 1, 20*x + 36, -1/12*x + 1/6, x, 2/3*x,
-                                 8*x + 12, 1/2*x - 5/6]]),
-                  5: matrix(R, [[1, 1, 2*x + 12, -1/6*x + 1, 1/2*x + 3/2,
-                                 1/6*x + 1/2, 9*x + 51, 1/12*x - 5/12]]),
-                  6: matrix(R, [[1, 1, 1/2*x + 9/2, -1/6*x + 1, 1/2*x - 3/2,
-                                 1/6*x - 1/2, 3*x + 15, 1/12*x - 5/12]]),
-                  7: matrix(R, [[1, 1, 1/2*x + 3/2, 1/12*x - 1/4, 1/2*x - 3/2,
-                                 1/6*x - 1/2, 6, -1/12*x + 7/12]])}
+SIZE_CYLINDERS = {1: matrix(R, [[1, 1, 1/2*x, 2*x,]]),
+                  2: matrix(R, [[1, 1, 1/2*x - 1/2, 2*x - 2]]),
+                  3: matrix(R, [[1, 1, 1/2*x + 1/2, 2*x + 2]]),
+                  4: matrix(R, [[1, 1, x, 2/3*x]]),
+                  5: matrix(R, [[1, 1, 1/2*x + 3/2, 1/6*x + 1/2]]),
+#                  6: matrix(R, [[1, 1, 1/2*x - 3/2,1/6*x - 1/2]]),
+#                  7: matrix(R, [[1, 1, 1/2*x - 3/2,1/6*x - 1/2]])}
 
 FIELDS = {1: QuadraticField(2, name='x'),  # D=2, i=1
           2: QuadraticField(3, name='x'),  # D=3, i=1
           3: QuadraticField(3, name='x'),  # D=3, i=2
           4: QuadraticField(3, name='x'),  # D=3, i=3
           5: QuadraticField(33, name='x'),  # D=33, i=1
-          6: QuadraticField(33, name='x'),  # D=33, i=2
-          7: QuadraticField(33, name='x')}  # D=33, i=3
+#          6: QuadraticField(33, name='x'),  # D=33, i=2
+#          7: QuadraticField(33, name='x')}  # D=33, i=3
 
 NUMBER_CANDIDATES = {(1, 1): 12,(1, 2): 8,(2, 1): 1,(4, 1): 3,(4, 2): 3,(4, 3): 3,(4, 4): 6,
                      (5, 1): 4,(5, 3): 8,(6, 3): 3,(6, 4): 8,(6, 5): 7,(7, 5): 18,(8, 5): 20}
